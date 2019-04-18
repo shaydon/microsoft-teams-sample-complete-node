@@ -47,5 +47,6 @@ export const DialogIds = {
 
     // Add entries for dialog ids
     GetStartDateDialogId: "GetStartDateDialog",
+    PromptTimeEnGbDialogId: "PromptTimeEnGbDialog",
 
 };
