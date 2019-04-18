@@ -46,5 +46,6 @@ export const DialogIds = {
     // *************************** END OF EXAMPLES *********************************
 
     // Add entries for dialog ids
+    GetStartDateDialogId: "GetStartDateDialog",
 
 };

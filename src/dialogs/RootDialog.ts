@@ -44,6 +44,7 @@ import { AdaptiveCardDialog } from "./examples/basic/AdaptiveCardDialog";
 // *************************** END OF EXAMPLES *********************************
 
 // Add imports for dialogs
+import { GetStartDateDialog } from "./GetStartDateDialog";
 
 // Main dialog that handles commands
 export class RootDialog extends builder.IntentDialog {
@@ -108,7 +109,7 @@ export class RootDialog extends builder.IntentDialog {
         // *************************** END OF EXAMPLES *********************************
 
         // Add child dialogs
-
+        new GetStartDateDialog(bot);
     }
 
     // Handle unrecognized input
