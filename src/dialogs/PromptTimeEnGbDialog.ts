@@ -14,7 +14,7 @@ export class PromptTimeEnGbDialog {
 
     private static async interpretResponse(
         session: builder.Session,
-        result: builder.IDialogResult<any>,
+        result: builder.IDialogResult<string>,
     ): Promise<void> {
         if (result.response) {
             let date = chrono.en_GB.parseDate(result.response);
