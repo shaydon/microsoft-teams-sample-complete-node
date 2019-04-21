@@ -144,6 +144,7 @@
     "popupsignin_successful":"Authentication popup closed, magic number passed through - %s",
     "end_of_example_string_responses": "******************************* EVERYTHING ABOVE HERE IS FOR A TEMPLATE EXAMPLE DIALOG *******************************",
 
+    "contract_type_prompt":"What kind of contract do you have?",
     "what_date_did_you_start_working_for_the_action_group":"What date did you start working for the Action Group?",
     "sorry_i_didnt_understand_that":"Sorry I didn't understand that.",
     "i_read_that_as":"I read that as %s"
