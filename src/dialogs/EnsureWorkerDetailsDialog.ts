@@ -3,25 +3,17 @@ import { TriggerActionDialog } from "../utils/TriggerActionDialog";
 import { DialogIds } from "../utils/DialogIds";
 import { DialogMatches } from "../utils/DialogMatches";
 import { Strings } from "../locale/locale";
+import { IPromptTimeEnGbDialogResult } from "./PromptTimeEnGbDialog";
+import { IWorkerDetails } from "./Worker";
 
-interface WorkerDetails {
-    casualContract?: boolean;
-    employeeContract?: EmployeeDetails;
-}
-
-interface EmployeeDetails {
-    hours?: number;
-    startDate?: Date;
-}
-
-export class EnsureWorkerDetailsDialog extends TriggerActionDialog {
+export class EnsureWorkerDetailsDialog {
 
     private static async step1(
         session: builder.Session,
-        args: WorkerDetails,
-        next: (args?: builder.IDialogResult<any>) => void,
+        args: IWorkerDetails,
+        next: (args?: builder.IPromptChoiceResult) => void,
         ): Promise<void> {
-        session.dialogData.workerDetails = {};
+        session.dialogData.workerDetails = args || {};
         let casualStatusKnown = "casualContract" in session.dialogData.workerDetails;
         let employeeStatusKnown = "employeeContract" in session.dialogData.workerDetails;
         if (!casualStatusKnown && !employeeStatusKnown) {
@@ -41,8 +33,8 @@ export class EnsureWorkerDetailsDialog extends TriggerActionDialog {
 
     private static async step2(
         session: builder.Session,
-        args: builder.IDialogResult<any>,
-        next: (args?: builder.IDialogResult<any>) => void,
+        args: builder.IPromptChoiceResult,
+        next: (args?: builder.IPromptNumberResult) => void,
         ): Promise<void> {
         if (args.response) {
             if (args.response.entity === "employee") {
@@ -57,7 +49,11 @@ export class EnsureWorkerDetailsDialog extends TriggerActionDialog {
             let employeeHoursKnown =
                 "hours" in session.dialogData.workerDetails.employeeContract;
             if (!employeeHoursKnown) {
-                builder.Prompts.number(session, "How many hours a week are you contracted to work?");
+                builder.Prompts.number(
+                    session,
+                    "How many hours a week are you contracted to work?",
+                    { minValue: 0, maxValue: 39 },
+                );
             } else {
                 next();
             }
@@ -73,41 +69,58 @@ export class EnsureWorkerDetailsDialog extends TriggerActionDialog {
         }
     }
 
-    private static async promptForStartDate(session: builder.Session, args?: any | builder.IDialogResult<any>, next?: (args?: builder.IDialogResult<any>) => void): Promise<void> {
-        session.beginDialog(
-            DialogIds.PromptTimeEnGbDialogId,
-            {
-                prompt: Strings.what_date_did_you_start_working_for_the_action_group,
-                retryPrompt: Strings.sorry_i_didnt_understand_that,
-            },
-        );
-    }
-
-    private static async showResult(session: builder.Session, args?: any | builder.IDialogResult<any>, next?: (args?: builder.IDialogResult<any>) => void): Promise<void> {
+    private static async step3(
+        session: builder.Session,
+        args: builder.IPromptNumberResult,
+        next: (args?: IPromptTimeEnGbDialogResult) => void,
+    ): Promise<void> {
         if (args.response) {
-            let msg = session.gettext(Strings.i_read_that_as, args.response);
-            session.send(msg);
-            session.endDialogWithResult({
-                response: args.response,
-            });
+            session.dialogData.workerDetails.employeeContract.hours = args.response;
+        }
+        let employeeStartDateKnown = "startDate" in session.dialogData.workerDetails.employeeContract;
+        if (!employeeStartDateKnown) {
+            session.beginDialog(
+                DialogIds.PromptTimeEnGbDialogId,
+                {
+                    prompt:
+`When did you start working for the Action Group?`
+/*
+If you're not sure of the exact date just tell me the month and year.
+
+If you started as a casual worker or volunteer, tell me when you became a contracted employee.
+`*/,
+                    retryPrompt: "Sorry I don't understand. Try something like '25/12/02' or 'June 2008'.",
+                },
+        );
         } else {
-            session.endDialogWithResult({
-                resumed: builder.ResumeReason.notCompleted,
-            });
+            next();
         }
     }
+
+    private static async step4(
+        session: builder.Session,
+        args: IPromptTimeEnGbDialogResult,
+        next: () => void,
+    ): Promise<void> {
+        if (args.response) {
+            session.dialogData.workerDetails.employeeContract.startDate = args.response;
+        }
+        session.send(session.dialogData.workerDetails);
+        session.endDialogWithResult({
+            response: session.dialogData.workerDetails,
+        });
+   }
 
     constructor(
         bot: builder.UniversalBot,
     ) {
-        super(bot,
+        bot.dialog(
             DialogIds.EnsureWorkerDetailsDialogId,
-            DialogMatches.CheckWorkerDetailsDialogMatch,
             [
                 EnsureWorkerDetailsDialog.step1,
                 EnsureWorkerDetailsDialog.step2,
-                EnsureWorkerDetailsDialog.promptForStartDate,
-                EnsureWorkerDetailsDialog.showResult,
+                EnsureWorkerDetailsDialog.step3,
+                EnsureWorkerDetailsDialog.step4,
             ],
         );
     }

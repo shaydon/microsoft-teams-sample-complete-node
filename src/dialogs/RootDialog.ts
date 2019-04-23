@@ -44,6 +44,7 @@ import { AdaptiveCardDialog } from "./examples/basic/AdaptiveCardDialog";
 // *************************** END OF EXAMPLES *********************************
 
 // Add imports for dialogs
+import { CheckAnnualLeaveDialog } from "./CheckAnnualLeaveDialog";
 import { EnsureWorkerDetailsDialog } from "./EnsureWorkerDetailsDialog";
 import { PromptTimeEnGbDialog } from "./PromptTimeEnGbDialog";
 
@@ -110,6 +111,7 @@ export class RootDialog extends builder.IntentDialog {
         // *************************** END OF EXAMPLES *********************************
 
         // Add child dialogs
+        new CheckAnnualLeaveDialog(bot);
         new EnsureWorkerDetailsDialog(bot);
         new PromptTimeEnGbDialog(bot);
     }

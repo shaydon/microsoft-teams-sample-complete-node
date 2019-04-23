@@ -2,6 +2,9 @@ import * as builder from "botbuilder";
 import * as chrono from "chrono-node";
 import { DialogIds } from "../utils/DialogIds";
 
+export interface IPromptTimeEnGbDialogResult
+    extends builder.IDialogResult<Date> {}
+
 export class PromptTimeEnGbDialog {
 
     private static async showPrompt(

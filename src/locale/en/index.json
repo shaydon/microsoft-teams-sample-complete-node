@@ -1,5 +1,5 @@
 {
-    "bot_introduction": "Hi!  I'm your new bot.",
+    "bot_introduction": "Hi!  I'm Holiday Bot - you can ask me about your holidays.",
     "bot_welcome_to_new_person": "Welcome new person!  I'm a bot.",
     "root_dialog_on_default": "What??? I don't know what to do! - Root Dialog",
     "need_to_log_in": "I'm sorry. In order to use this functionality you must log in.",
@@ -142,10 +142,5 @@
     "popupsignin_card_title":"Please click below for popup sign-in experience",
     "popupsignin_button_title":"Sign In",
     "popupsignin_successful":"Authentication popup closed, magic number passed through - %s",
-    "end_of_example_string_responses": "******************************* EVERYTHING ABOVE HERE IS FOR A TEMPLATE EXAMPLE DIALOG *******************************",
-
-    "contract_type_prompt":"What kind of contract do you have?",
-    "what_date_did_you_start_working_for_the_action_group":"What date did you start working for the Action Group?",
-    "sorry_i_didnt_understand_that":"Sorry I didn't understand that.",
-    "i_read_that_as":"I read that as %s"
+    "end_of_example_string_responses": "******************************* EVERYTHING ABOVE HERE IS FOR A TEMPLATE EXAMPLE DIALOG *******************************"
 }

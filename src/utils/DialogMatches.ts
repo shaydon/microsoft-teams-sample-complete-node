@@ -45,6 +45,6 @@ export const DialogMatches = {
     // *************************** END OF EXAMPLES *********************************
 
     // Add regex or string intent matches for dialogs
-    CheckWorkerDetailsDialogMatch: /how much annual leave do I have\?/i,
+    CheckAnnualLeaveDialogMatch: /how much annual leave do I have\?/i,
 
 };

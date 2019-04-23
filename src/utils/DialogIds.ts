@@ -46,6 +46,7 @@ export const DialogIds = {
     // *************************** END OF EXAMPLES *********************************
 
     // Add entries for dialog ids
+    CheckAnnualLeaveDialogId: "CheckAnnualLeaveDialog",
     EnsureWorkerDetailsDialogId: "EnsureWorkerDetailsDialog",
     PromptTimeEnGbDialogId: "PromptTimeEnGbDialog",
 
