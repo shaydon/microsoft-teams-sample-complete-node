@@ -10,6 +10,7 @@ import { Strings } from "./locale/locale";
 import { loadSessionAsync } from "./utils/DialogUtils";
 import * as teams from "botbuilder-teams";
 import { ComposeExtensionHandlers } from "./composeExtension/ComposeExtensionHandlers";
+import { NormalizeWhitespace } from "./middleware/NormalizeWhitespace";
 
 // =========================================================
 // Bot Setup
@@ -42,6 +43,7 @@ export class Bot extends builder.UniversalBot {
             new StripBotAtMentions(),
             new RestrictIncomingMessagesToTenants(),
             new LoadBotChannelData(this.get("channelStorage")),
+            new NormalizeWhitespace(),
         );
 
         // setup invoke payload handler

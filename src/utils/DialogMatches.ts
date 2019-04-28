@@ -45,6 +45,9 @@ export const DialogMatches = {
     // *************************** END OF EXAMPLES *********************************
 
     // Add regex or string intent matches for dialogs
-    CheckAnnualLeaveDialogMatch: /how much annual leave do I have\?/i,
-
+    CheckAnnualLeaveDialogMatch:
+        [
+            /(?:what|how (?:much|many)) (?:days (?:of )?)?(?:holidays?|(?:annual )?leave) (?:days )?(?:have I(?: got)?|do I (?:get|have|receive))(?: this year|(?: just| right)? now| at (?:the|this) (?:moment|time|point))?\?/i,
+            /what is my (?:holidays?|(?:annual )?leave) (?:days )?entitlement(?: this year|(?: just| right)? now| at (?:the|this) (?:moment|time|point))?\?/i,
+        ],
 };
