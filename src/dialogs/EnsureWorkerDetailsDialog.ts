@@ -4,19 +4,18 @@ import { DialogIds } from "../utils/DialogIds";
 import { DialogMatches } from "../utils/DialogMatches";
 import { Strings } from "../locale/locale";
 import { IPromptTimeEnGbDialogResult } from "./PromptTimeEnGbDialog";
-import { IWorkerDetails } from "./Worker";
+import { Worker, EmployeeContract, CasualContract } from "./Worker";
 
 export class EnsureWorkerDetailsDialog {
 
     private static async step1(
         session: builder.Session,
-        args: IWorkerDetails,
+        worker: Worker,
         next: (args?: builder.IPromptChoiceResult) => void,
         ): Promise<void> {
-        session.dialogData.workerDetails = args || {};
-        let casualStatusKnown = "casualContract" in session.dialogData.workerDetails;
-        let employeeStatusKnown = "employeeContract" in session.dialogData.workerDetails;
-        if (!casualStatusKnown && !employeeStatusKnown) {
+        session.dialogData.worker = worker.serialize();
+        if (worker.casualContract === undefined &&
+            worker.employeeContract === undefined) {
             builder.Prompts.choice(
                 session,
                 "Are you a casual worker or an employee (full or part-time)?",
@@ -24,7 +23,7 @@ export class EnsureWorkerDetailsDialog {
                 { listStyle: builder.ListStyle.button },
             );
         } else {
-            if (casualStatusKnown && !session.dialogData.workerDetails.casualContract) {
+            if (worker.casualContract === null) {
                 session.send("I know you're not a casual worker, so please tell me about your employment with us.");
             }
             next();
@@ -36,19 +35,18 @@ export class EnsureWorkerDetailsDialog {
         args: builder.IPromptChoiceResult,
         next: (args?: builder.IPromptNumberResult) => void,
         ): Promise<void> {
+        let worker = Worker.deserialize(session.dialogData.worker);
         if (args.response) {
             if (args.response.entity === "employee") {
-                session.dialogData.workerDetails.employeeContract =
-                    session.dialogData.workerDetails.employeeContract || {};
+                worker.employeeContract = worker.employeeContract || new EmployeeContract();
             } else {
-                session.dialogData.workerDetails.casualContract = true;
-                session.dialogData.workerDetails.employeeContract = null;
+                worker.casualContract = worker.casualContract || new CasualContract();
+                worker.employeeContract = null;
             }
         }
-        if (session.dialogData.workerDetails.employeeContract) {
-            let employeeHoursKnown =
-                "hours" in session.dialogData.workerDetails.employeeContract;
-            if (!employeeHoursKnown) {
+        session.dialogData.worker = worker.serialize();
+        if (worker.employeeContract) {
+            if (worker.employeeContract.hours === undefined) {
                 builder.Prompts.number(
                     session,
                     "How many hours a week are you contracted to work?",
@@ -57,10 +55,10 @@ export class EnsureWorkerDetailsDialog {
             } else {
                 next();
             }
-        } else if (session.dialogData.workerDetails.casualContract) {
+        } else if (worker.casualContract) {
             session.send("As a casual worker, you receive statuatory holiday pay. Please speak to your manager for details!");
             session.endDialogWithResult({
-                response: session.dialogData.workerDetails,
+                response: worker,
             });
         } else {
             session.endDialogWithResult({
@@ -74,11 +72,12 @@ export class EnsureWorkerDetailsDialog {
         args: builder.IPromptNumberResult,
         next: (args?: IPromptTimeEnGbDialogResult) => void,
     ): Promise<void> {
+        let worker = Worker.deserialize(session.dialogData.worker);
         if (args.response) {
-            session.dialogData.workerDetails.employeeContract.hours = args.response;
+            worker.employeeContract.hours = args.response;
         }
-        let employeeStartDateKnown = "startDate" in session.dialogData.workerDetails.employeeContract;
-        if (!employeeStartDateKnown) {
+        session.dialogData.worker = worker.serialize();
+        if (worker.employeeContract.startDate === undefined) {
             session.beginDialog(
                 DialogIds.PromptTimeEnGbDialogId,
                 {
@@ -102,12 +101,13 @@ If you started as a casual worker or volunteer, tell me when you became a contra
         args: IPromptTimeEnGbDialogResult,
         next: () => void,
     ): Promise<void> {
+        let worker = Worker.deserialize(session.dialogData.worker);
         if (args.response) {
-            session.dialogData.workerDetails.employeeContract.startDate = args.response;
+            worker.employeeContract.startDate = args.response;
         }
-        session.send(session.dialogData.workerDetails);
+        session.dialogData.worker = worker.serialize();
         session.endDialogWithResult({
-            response: session.dialogData.workerDetails,
+            response: worker,
         });
    }
 
